@@ -1,7 +1,23 @@
 
 
+docker build --pull --rm -f "DockerFile" -t incubator-wayang:latest "." 
 
-docker run -it --name wayang-container -p 8080:8080 -p 7077:7077 -p 4040:4040 incubator-wayang
-mvn clean install -DskipTests
+
+
+docker run -it --name wayang-container -p 8080:8080 -p 7077:7077 -p 4040:4040 incubator-wayang:latest 
+
+## in the docker container
+mvn clean install -DskipTests -Drat.numUnapprovedLicenses=100
 
 mvn clean package -pl :wayang-assembly -Pdistribution
+
+# in folder wayang-assembly/target
+
+tar -xvf wayang-assembly-0.7.1-SNAPSHOT-dist.tar.gz
+cd wayang-0.7.1
+
+# in wayang-0.7.1 target with bin 
+
+echo "export WAYANG_HOME=$(pwd)" >> ~/.bashrc
+echo "export PATH=${PATH}:${WAYANG_HOME}/bin" >> ~/.bashrc
+source ~/.bashrc
