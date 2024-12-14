@@ -2,22 +2,32 @@
 
 docker build --pull --rm -f "DockerFile" -t incubator-wayang:latest "." 
 
-
+docker rm wayang-container 
 
 docker run -it --name wayang-container -p 8080:8080 -p 7077:7077 -p 4040:4040 incubator-wayang:latest 
 
 ## in the docker container
+## time 4.55 min
 mvn clean install -DskipTests -Drat.numUnapprovedLicenses=100
 
+## time 60 s
 mvn clean package -pl :wayang-assembly -Pdistribution
 
 # in folder wayang-assembly/target
-
-tar -xvf wayang-assembly-0.7.1-SNAPSHOT-dist.tar.gz
+# can be skipped
+tar -xvf wayang-assembly-0.7.1-incubating-dist.tar.gz
 cd wayang-0.7.1
 
-# in wayang-0.7.1 target with bin 
-
+# in wayang-0.7.1
+cd wayang-assembly/target/apache-wayang-assembly-0.7.1-incubating-dist/wayang-0.7.1
 echo "export WAYANG_HOME=$(pwd)" >> ~/.bashrc
 echo "export PATH=${PATH}:${WAYANG_HOME}/bin" >> ~/.bashrc
 source ~/.bashrc
+
+
+sed -i 's/\r$//' ./bin/wayang-submit
+
+
+./bin/wayang-submit org.apache.wayang.apps.wordcount.Main java file:///opt/wayang/wayang-assembly/target/apache-wayang-assembly-0.7.1-incubating-dist/wayang-0.7.1/README.md
+
+./bin/wayang-submit org.apache.wayang.apps.ParquetVsCsv.Main 
